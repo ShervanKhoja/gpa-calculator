@@ -1,0 +1,55 @@
+name: avg_uni
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.10.0
+  url_launcher: ^6.3.1
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.3.3
+  lottie: ^3.1.2
+  flutter_native_splash: ^2.4.8
+  intl: ^0.20.3
+
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.13.1"
+  flutter_lints: ^3.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_logo-removebg-preview.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF"
+
+flutter_native_splash:
+  color: "#1B1B3A"
+  color_dark: "#1B1B3A"
+  image: "assets/images/ksk_logo_variation_on_black_background_new.png"
+  image_dark: "assets/images/ksk_logo_variation_on_black_background_new.png"
+
+  android_12:
+    color: "#1B1B3A"
+    color_dark: "#1B1B3A"
+    image: "assets/images/ksk_logo_variation_on_black_background_new.png"
+    image_dark: "assets/images/ksk_logo_variation_on_black_background_new.png"
+    icon_background_color: "#1B1B3A"
+    icon_background_color_dark: "#1B1B3A"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/app_logo-removebg-preview.png
+    - assets/images/loading_graduation.json
+    - assets/images/ksk_logo_variation_on_black_background_new.png
