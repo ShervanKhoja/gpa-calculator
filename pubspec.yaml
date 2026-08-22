@@ -17,11 +17,6 @@ dependencies:
   flutter_native_splash: ^2.4.8
   intl: ^0.20.3
 
-  # الحزم الأساسية المستقرة للتحديث التلقائي
-  http: ^1.2.0
-  open_filex: ^4.4.0
-  path_provider: ^2.1.2
-
   flutter_localizations:
     sdk: flutter
 

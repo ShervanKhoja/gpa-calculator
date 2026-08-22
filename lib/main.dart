@@ -1,14 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_filex/open_filex.dart';
 
 // الربط الآمن مع الملفات الثلاثة التي أنشأتها
 import 'webview_stub.dart'
@@ -159,78 +154,6 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-  // رقم الإصدار الحالي للتطبيق (قم بتحديثه هنا عند كل تحديث جديد ترفعه)
-  final String currentAppVersion = "1.0.0+1";
-
-  @override
-  void initState() {
-    super.initState();
-    // فحص التحديثات تلقائياً عند فتح الشاشة الرئيسية
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkForUpdate(context);
-    });
-  }
-
-  Future<void> checkForUpdate(BuildContext context) async {
-    try {
-      final url = Uri.parse('https://raw.githubusercontent.com/ShervanKhoja/gpa-calculator/main/version.json');
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        String latestVersion = data['version'];
-        String apkUrl = data['apk_url'];
-
-        // مقارنة الإصدار الثابت مع الإصدار الموجود على جيت هب
-        if (latestVersion != currentAppVersion) {
-          if (!mounted) return;
-          showUpdateDialog(context, apkUrl);
-        }
-      }
-    } catch (e) {
-      print("خطأ في التحقق من التحديث: $e");
-    }
-  }
-
-  void showUpdateDialog(BuildContext context, String apkUrl) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text("تحديث جديد متوفر"),
-        content: const Text("يتوفر إصدار جديد من تطبيق حساب المعدل، هل تريد تحديثه الآن؟"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("لاحقاً"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              downloadAndInstall(apkUrl);
-            },
-            child: const Text("تحديث"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> downloadAndInstall(String url) async {
-    try {
-      final dir = await getTemporaryDirectory();
-      final filePath = '${dir.path}/update.apk';
-
-      final response = await http.get(Uri.parse(url));
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
-
-      await OpenFilex.open(filePath);
-    } catch (e) {
-      print("فشل التحميل: $e");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Locale>(
