@@ -347,7 +347,7 @@ class AboutPage extends StatelessWidget {
                             const Icon(Icons.person, color: Color(0xFF1B1B3A), size: 20),
                             const SizedBox(width: 10),
                             Text(
-                              isArabic ? "المطور: Shervna khoja" : "Developer: Shervna khoja",
+                              isArabic ? "المطور: Shervan khoja" : "Developer: Shervan khoja",
                               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                           ],
