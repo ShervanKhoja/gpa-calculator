@@ -21,6 +21,10 @@ class _PercentCalculatorState extends State<PercentCalculator> {
   double result = 0.0;
   double cumulativeResult = 0.0;
 
+  bool _isArabic(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'ar';
+  }
+
   // دالة عرض رسائل الخطأ
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -31,19 +35,20 @@ class _PercentCalculatorState extends State<PercentCalculator> {
   // دالة الحذف الجماعي مع التأكيد
   void _deleteAllConfirmation() {
     if (courses.isEmpty) return;
+    final bool ar = _isArabic(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("حذف الكل"),
-        content: const Text("هل أنت متأكد من حذف جميع المواد؟"),
+        title: Text(ar ? "حذف الكل" : "Delete All"),
+        content: Text(ar ? "هل أنت متأكد من حذف جميع المواد؟" : "Are you sure you want to delete all courses?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ar ? "إلغاء" : "Cancel")),
           TextButton(
             onPressed: () {
               setState(() { courses.clear(); _calc(); });
               Navigator.pop(ctx);
             },
-            child: const Text("حذف الكل", style: TextStyle(color: Colors.red)),
+            child: Text(ar ? "حذف الكل" : "Delete All", style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -52,19 +57,20 @@ class _PercentCalculatorState extends State<PercentCalculator> {
 
   // دالة الحذف الفردي مع التأكيد
   void _deleteCourseConfirmation(int index) {
+    final bool ar = _isArabic(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("حذف المادة"),
-        content: const Text("هل أنت متأكد من حذف هذه المادة؟"),
+        title: Text(ar ? "حذف المادة" : "Delete Course"),
+        content: Text(ar ? "هل أنت متأكد من حذف هذه المادة؟" : "Are you sure you want to delete this course?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ar ? "إلغاء" : "Cancel")),
           TextButton(
             onPressed: () {
               setState(() { courses.removeAt(index); _calc(); });
               Navigator.pop(ctx);
             },
-            child: const Text("حذف", style: TextStyle(color: Colors.red)),
+            child: Text(ar ? "حذف" : "Delete", style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -72,16 +78,17 @@ class _PercentCalculatorState extends State<PercentCalculator> {
   }
 
   void _add() {
+    final bool ar = _isArabic(context);
     double? g = double.tryParse(_gradeCont.text);
     double? h = double.tryParse(_hoursCont.text);
 
     // التحقق من صحة المدخلات
     if (g == null || h == null) {
-      _showError("يرجى تعبئة الحقول بأرقام صحيحة!");
+      _showError(ar ? "يرجى تعبئة الحقول بأرقام صحيحة!" : "Please fill in the fields with valid numbers!");
     } else if (h <= 0) {
-      _showError("عدد الساعات يجب أن يكون أكبر من صفر!");
+      _showError(ar ? "عدد الساعات يجب أن يكون أكبر من صفر!" : "Hours must be greater than zero!");
     } else if (g < 0 || g > 100) {
-      _showError("العلامة يجب أن تكون بين 0 و 100!");
+      _showError(ar ? "العلامة يجب أن تكون بين 0 و 100!" : "Grade must be between 0 and 100!");
     } else {
       setState(() {
         courses.add({"grade": g, "hours": h});
@@ -103,14 +110,15 @@ class _PercentCalculatorState extends State<PercentCalculator> {
     double? oldP = double.tryParse(_oldPercentCont.text);
     double? oldH = double.tryParse(_oldHoursCont.text);
     cumulativeResult = (oldP != null && oldH != null && oldH > 0) ? ((oldP * oldH) + totalW) / (oldH + totalH) : result;
-    // تم إزالة setState هنا لأنها تستدعى عند الحاجة أو عند كل تغيير في الحقول
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool ar = _isArabic(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("نظام النسبة المئوية"),
+        title: Text(ar ? "نظام النسبة المئوية" : "Percentage System"),
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         actions: [
@@ -125,27 +133,27 @@ class _PercentCalculatorState extends State<PercentCalculator> {
         child: Column(
           children: [
             ExpansionTile(
-              title: const Text("حساب المعدل التراكمي (اختياري)"),
+              title: Text(ar ? "حساب المعدل التراكمي (اختياري)" : "Cumulative GPA Calculation (Optional)"),
               onExpansionChanged: (_) => setState(() => _calc()),
               children: [
-                _input(_oldPercentCont, "النسبة السابقة", FocusNode(), null, TextInputAction.next),
-                _input(_oldHoursCont, "الساعات السابقة", FocusNode(), null, TextInputAction.done),
+                _input(_oldPercentCont, ar ? "النسبة السابقة" : "Previous Percentage", FocusNode(), null, TextInputAction.next),
+                _input(_oldHoursCont, ar ? "الساعات السابقة" : "Previous Hours", FocusNode(), null, TextInputAction.done),
               ],
             ),
             const SizedBox(height: 10),
-            _input(_gradeCont, "العلامة من 100", _gradeFocus, _hoursFocus, TextInputAction.next),
-            _input(_hoursCont, "عدد الساعات", _hoursFocus, null, TextInputAction.done),
+            _input(_gradeCont, ar ? "العلامة من 100" : "Grade out of 100", _gradeFocus, _hoursFocus, TextInputAction.next),
+            _input(_hoursCont, ar ? "عدد الساعات" : "Credit Hours", _hoursFocus, null, TextInputAction.done),
 
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: _add, child: const Text("إضافة مادة")),
+              child: ElevatedButton(onPressed: _add, child: Text(ar ? "إضافة مادة" : "Add Course")),
             ),
             const SizedBox(height: 20),
 
             Row(
               children: [
-                Expanded(child: _buildGauge("فصلي", result, Colors.teal)),
-                Expanded(child: _buildGauge("تراكمي", cumulativeResult, Colors.blueAccent)),
+                Expanded(child: _buildGauge(ar ? "فصلي" : "Semester", result, Colors.teal)),
+                Expanded(child: _buildGauge(ar ? "تراكمي" : "Cumulative", cumulativeResult, Colors.blueAccent)),
               ],
             ),
             const SizedBox(height: 10),
@@ -156,8 +164,8 @@ class _PercentCalculatorState extends State<PercentCalculator> {
               itemCount: courses.length,
               itemBuilder: (context, i) => Card(
                 child: ListTile(
-                  title: Text("العلامة: ${courses[i]["grade"]}%"),
-                  subtitle: Text("الساعات: ${courses[i]["hours"]}"),
+                  title: Text(ar ? "العلامة: ${courses[i]["grade"]}%" : "Grade: ${courses[i]["grade"]}%"),
+                  subtitle: Text(ar ? "الساعات: ${courses[i]["hours"]}" : "Hours: ${courses[i]["hours"]}"),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () => _deleteCourseConfirmation(i),

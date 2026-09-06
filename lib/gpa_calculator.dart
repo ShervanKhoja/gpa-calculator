@@ -6,7 +6,12 @@ class GPACalculator extends StatefulWidget {
   final Color appBarColor;
   final double max;
 
-  const GPACalculator({super.key, required this.systemName, required this.appBarColor, required this.max});
+  const GPACalculator({
+    super.key,
+    required this.systemName,
+    required this.appBarColor,
+    required this.max,
+  });
 
   @override
   State<GPACalculator> createState() => _GPACalculatorState();
@@ -25,6 +30,10 @@ class _GPACalculatorState extends State<GPACalculator> {
   double result = 0.0;
   double cumulativeResult = 0.0;
 
+  bool _isArabic(BuildContext context) {
+    return Localizations.localeOf(context).languageCode == 'ar';
+  }
+
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
@@ -32,21 +41,22 @@ class _GPACalculatorState extends State<GPACalculator> {
   }
 
   void _add() {
+    final bool ar = _isArabic(context);
     double? p = double.tryParse(_pointsCont.text);
     double? h = double.tryParse(_hoursCont.text);
 
     if (p == null || h == null) {
-      _showError("يرجى إدخال النقاط وعدد الساعات!");
+      _showError(ar ? "يرجى إدخال النقاط وعدد الساعات!" : "Please enter points and hours!");
       return;
     }
 
     if (h <= 0) {
-      _showError("الساعات يجب أن تكون أكبر من 0!");
+      _showError(ar ? "الساعات يجب أن تكون أكبر من 0!" : "Hours must be greater than 0!");
       return;
     }
 
     if (p < 0 || p > widget.max) {
-      _showError("النقاط يجب أن تكون بين 0 و ${widget.max}!");
+      _showError(ar ? "النقاط يجب أن تكون بين 0 و ${widget.max}!" : "Points must be between 0 and ${widget.max}!");
       return;
     }
 
@@ -83,19 +93,20 @@ class _GPACalculatorState extends State<GPACalculator> {
 
   void _deleteAllConfirmation() {
     if (courses.isEmpty) return;
+    final bool ar = _isArabic(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("حذف الكل"),
-        content: const Text("هل أنت متأكد من حذف جميع المواد؟"),
+        title: Text(ar ? "حذف الكل" : "Delete All"),
+        content: Text(ar ? "هل أنت متأكد من حذف جميع المواد؟" : "Are you sure you want to delete all courses?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ar ? "إلغاء" : "Cancel")),
           TextButton(
             onPressed: () {
               setState(() { courses.clear(); _calc(); });
               Navigator.pop(ctx);
             },
-            child: const Text("حذف الكل", style: TextStyle(color: Colors.red)),
+            child: Text(ar ? "حذف الكل" : "Delete All", style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -103,19 +114,20 @@ class _GPACalculatorState extends State<GPACalculator> {
   }
 
   void _deleteCourse(int index) {
+    final bool ar = _isArabic(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("حذف مادة"),
-        content: const Text("هل أنت متأكد من حذف هذه المادة؟"),
+        title: Text(ar ? "حذف مادة" : "Delete Course"),
+        content: Text(ar ? "هل أنت متأكد من حذف هذه المادة؟" : "Are you sure you want to delete this course?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(ar ? "إلغاء" : "Cancel")),
           TextButton(
             onPressed: () {
               setState(() { courses.removeAt(index); _calc(); });
               Navigator.pop(ctx);
             },
-            child: const Text("حذف", style: TextStyle(color: Colors.red)),
+            child: Text(ar ? "حذف" : "Delete", style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -124,6 +136,8 @@ class _GPACalculatorState extends State<GPACalculator> {
 
   @override
   Widget build(BuildContext context) {
+    final bool ar = _isArabic(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.systemName),
@@ -138,15 +152,21 @@ class _GPACalculatorState extends State<GPACalculator> {
         child: Column(
           children: [
             ExpansionTile(
-              title: const Text("المعدل التراكمي السابق (اختياري)"),
+              title: Text(ar ? "المعدل التراكمي السابق (اختياري)" : "Previous Cumulative GPA (Optional)"),
               children: [
-                _input(_oldGpaCont, "المعدل السابق", null, null, TextInputAction.next),
-                _input(_oldHoursCont, "الساعات السابقة", null, null, TextInputAction.done),
+                _input(_oldGpaCont, ar ? "المعدل السابق" : "Previous GPA", null, null, TextInputAction.next),
+                _input(_oldHoursCont, ar ? "الساعات السابقة" : "Previous Hours", null, null, TextInputAction.done),
               ],
             ),
             const SizedBox(height: 10),
-            _input(_pointsCont, "النقاط (من ${widget.max})", _pointsNode, _hoursNode, TextInputAction.next),
-            _input(_hoursCont, "عدد الساعات", _hoursNode, null, TextInputAction.done),
+            _input(
+              _pointsCont,
+              ar ? "النقاط (من ${widget.max})" : "Points (out of ${widget.max})",
+              _pointsNode,
+              _hoursNode,
+              TextInputAction.next,
+            ),
+            _input(_hoursCont, ar ? "عدد الساعات" : "Credit Hours", _hoursNode, null, TextInputAction.done),
 
             const SizedBox(height: 15),
             SizedBox(
@@ -155,15 +175,15 @@ class _GPACalculatorState extends State<GPACalculator> {
               child: ElevatedButton.icon(
                 onPressed: _add,
                 icon: const Icon(Icons.add),
-                label: const Text("إضافة مادة"),
+                label: Text(ar ? "إضافة مادة" : "Add Course"),
               ),
             ),
 
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: _buildGauge("الفصلي", result, Colors.blue)),
-                Expanded(child: _buildGauge("التراكمي", cumulativeResult, Colors.indigo)),
+                Expanded(child: _buildGauge(ar ? "الفصلي" : "Semester", result, Colors.blue)),
+                Expanded(child: _buildGauge(ar ? "التراكمي" : "Cumulative", cumulativeResult, Colors.indigo)),
               ],
             ),
 
@@ -174,7 +194,11 @@ class _GPACalculatorState extends State<GPACalculator> {
               itemCount: courses.length,
               itemBuilder: (context, i) => Card(
                 child: ListTile(
-                  title: Text("النقاط: ${courses[i]["points"]} | الساعات: ${courses[i]["hours"]}"),
+                  title: Text(
+                    ar
+                        ? "النقاط: ${courses[i]["points"]} | الساعات: ${courses[i]["hours"]}"
+                        : "Points: ${courses[i]["points"]} | Hours: ${courses[i]["hours"]}",
+                  ),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () => _deleteCourse(i),

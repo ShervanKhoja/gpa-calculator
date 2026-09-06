@@ -12,6 +12,8 @@ class AdBannerWidget extends StatefulWidget {
 
 class _AdBannerWidgetState extends State<AdBannerWidget> {
   late final WebViewController _controller;
+  bool _isLoaded = false;
+  int _navigationCount = 0; // عدّاد لمنع النقرات التلقائية والوهمية عند التشغيل
 
   @override
   void initState() {
@@ -25,13 +27,31 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
         NavigationDelegate(
           onHttpError: (HttpResponseError error) {},
           onWebResourceError: (WebResourceError error) {},
+          onPageFinished: (String url) {
+            setState(() {
+              _isLoaded = true;
+              _navigationCount = 0; // إعادة ضبط العدّاد عند اكتمال تحميل الصفحة
+            });
+          },
           onNavigationRequest: (NavigationRequest request) async {
-            // إذا كان الرابط هو صفحة غيت هوب الخاصة بالإعلانات، اتركه يحمل طبيعياً داخل البانر
+            // السماح دائماً بتحميل صفحة الجيت هوب الأساسية داخل البانر
             if (request.url.contains('shervankhoja.github.io')) {
               return NavigationDecision.navigate;
             }
 
-            // لأي رابط إعلان خارجي، قم بفتحه فوراً في متصفح الهاتف الخارجي
+            // منع أي عملية توجيه أو فتح تلقائي أثناء التحميل الأولي
+            if (!_isLoaded) {
+              return NavigationDecision.prevent;
+            }
+
+            _navigationCount++;
+
+            // تجاهل أي محاولة توجيه وهمية أو تلقائية يفرضها السكريبت عند التحميل
+            if (_navigationCount <= 1) {
+              return NavigationDecision.prevent;
+            }
+
+            // إذا قام المستخدم بالضغط الفعلي والمقصود على الإعلان
             final Uri uri = Uri.parse(request.url);
             try {
               if (await canLaunchUrl(uri)) {
@@ -43,7 +63,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
               // معالجة الخطأ بصمت
             }
 
-            // منع تحميل الرابط داخل مساحة البانر الضيقة
+            // منع تحميل رابط الإعلان داخل مساحة البانر الضيقة وفتحه في المتصفح الخارجي
             return NavigationDecision.prevent;
           },
         ),
@@ -63,7 +83,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
-        height: 50, // مقاس البانر 320x50 بدقة
+        height: 50, // مقاس البانر بدقة
         width: double.infinity,
         child: WebViewWidget(controller: _controller),
       ),

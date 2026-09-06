@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-// الربط الآمن مع الملفات الثلاثة التي أنشأتها
+// الربط الآمن مع الملفات الثلاثة الخاصة بالإعلانات/الـ Webview
 import 'webview_stub.dart'
 if (dart.library.html) 'webview_web.dart'
 if (dart.library.io) 'webview_mobile.dart';
