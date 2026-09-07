@@ -317,7 +317,7 @@ class AboutPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      isArabic ? "الإصدار 1.0.0" : "Version 1.0.0",
+                      isArabic ? "الإصدار 1.0.2" : "Version 1.0.2",
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 30),
